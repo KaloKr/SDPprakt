@@ -1,0 +1,53 @@
+#include"Tree.h"
+#include<iostream>
+
+using namespace std;
+
+void deleteNode(Tree* tree)
+{
+	int toDel;
+	cin >> toDel;
+	tree->deleteSave(toDel);
+}
+
+void findNode(Tree* tree)
+{
+	int toFind;
+	cin >> toFind;
+	tree->find(toFind);
+}
+
+void insertNode(Tree* tree)
+{
+	Student stud;
+	cin >> stud;
+	tree->insert(stud);
+}
+
+int main()
+{
+	char command[14];
+
+	Tree *blooming = new Tree();
+
+	while (command[0] != 'e')
+	{
+		cin >> command;
+
+		switch (command[0])
+		{
+
+		case't': blooming->traverseInorder(); break;
+
+		case'd': deleteNode(blooming); break;
+
+		case'f': findNode(blooming); break;
+
+		case'i': insertNode(blooming); break;
+
+		}
+	}
+
+
+	return 0;
+}
