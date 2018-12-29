@@ -24,6 +24,16 @@ void insertNode(Tree* tree)
 	tree->insert(stud);
 }
 
+void traverseTree(Tree* tree)
+{
+	if (tree)
+	{
+		tree->traverseInorder();
+	}
+
+}
+
+
 int main()
 {
 	char command[14];
@@ -37,13 +47,14 @@ int main()
 		switch (command[0])
 		{
 
-		case't': blooming->traverseInorder(); break;
+		case't': traverseTree(blooming); break;
 
 		case'd': deleteNode(blooming); break;
 
 		case'f': findNode(blooming); break;
 
 		case'i': insertNode(blooming); break;
+
 
 		}
 	}
