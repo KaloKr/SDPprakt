@@ -55,12 +55,11 @@ void Tree::insert(Student arrived)
 	cout << "Record inserted!" << endl;
 }
 
-
 void Tree::deleteSave(int curr)
 {
 	if (existing(root, curr))
 	{
-		deleteHelp(root, curr);
+		root = deleteHelp(root, curr);
 		cout << "Record deleted!" << endl;
 	}
 	else
@@ -69,72 +68,68 @@ void Tree::deleteSave(int curr)
 	}
 }
 
-
 Node* Tree::deleteHelp(Node* root, int chosen)
 {
 	if (!root)
 	{
 		return root;
 	}
+	
+	if (chosen < root->student.getFN())
+	{
+		root->left = deleteHelp(root->left, chosen);
+	}
 	else
 	{
-		if (chosen < root->student.getFN())
+		if (root->student.getFN() < chosen)
 		{
-			root->left = deleteHelp(root->left, chosen);
+			root->right = deleteHelp(root->right, chosen);
 		}
+		//the case where we actually delete smth
 		else
 		{
-			if (root->student.getFN() < chosen)
+			//case1:
+			if (!root->left && !root->right)
 			{
-				root->right = deleteHelp(root->right, chosen);
+				delete root;
+				root = nullptr;
 			}
-			//the case where we actually delete smth
+			//case2:
 			else
 			{
-				//case1:
-				if (!root->left && !root->right)
+				//case 2.1
+				if (!root->left)
 				{
-					delete root;
-					root = nullptr;
-
+					Node* temp = root;
+					root = root->right;
+					delete temp;
+						
 				}
-				//case2:
 				else
 				{
-					//case 2.1
-					if (!root->left)
+					//case2.2
+					if (!root->right)
 					{
 						Node* temp = root;
-						root = root->right;
+						root = root->left;
 						delete temp;
-						
+
 					}
+					//case 3
 					else
 					{
-						//case2.2
-						if (!root->right)
-						{
-							Node* temp = root;
-							root = root->left;
-							delete temp;
-
-						}
-						//case 3
-						else
-						{
-							Node* temp = findMin(root->right);
-							root->student = temp->student;
-							root->right = deleteHelp(root->right, temp->student.getFN());
-						}
+						Node* temp = findMin(root->right);
+						root->student = temp->student;
+						root->right = deleteHelp(root->right, temp->student.getFN());
 					}
 				}
-
-				
-			}
+			}	
 		}
 	}
+	
 	return root;
 }
+
 //Function to find min member of certain tree.
 Node* findMin(Node* root)
 {
@@ -150,7 +145,6 @@ Node* findMin(Node* root)
 
 	return temp;
 }
-
 
 void Tree::find(int fn)
 {
@@ -183,23 +177,7 @@ void Tree::findHelp(Node* root, int fn)
 	}
 }
 
-void Tree::traverseHelp(Node* root)
-{
-	if (!root)
-	{
-		return;
-	}
-
-
-	traverseHelp(root->left);
-
-	cout << root->student.getFN() << ',';
-
-	traverseHelp(root->right);
-}
-
-vector<Student> Tree::traversalHelp
-(Node* root)
+vector<Student> Tree::traversalHelp(Node* root)
 {
 	vector<Student> r;
 	if (!root) {
@@ -215,14 +193,16 @@ vector<Student> Tree::traversalHelp
 		p = st.top();
 		st.pop();
 		r.push_back(p->student);
+
 		p = p->right;
+		
+
 	}
 	return r;
 }
 
 void Tree::traverseInorder()
 {
-
 	vector<Student> state = traversalHelp(root);
 	for (int i = 0; i < state.size(); i++)
 	{
@@ -233,6 +213,7 @@ void Tree::traverseInorder()
 		else
 		{
 			cout << state[i].getFN() << ',';
+			//Тук имах колебания дали да е само ',' или ", ", но заради условието го оставих само ','.
 		}
 	}
 	cout << endl;
@@ -254,12 +235,12 @@ void deleteTree(Node* root)
 
 }
 
-
 Tree::~Tree()
 {
 	deleteTree(root);
 }
 
+//Дали стойността е в дървото.
 bool Tree::existing(Node* root, int val)
 {
 	if (!root)
@@ -280,7 +261,4 @@ bool Tree::existing(Node* root, int val)
 	}
 }
 
-
-
 #endif // !TREE_CPP
-
