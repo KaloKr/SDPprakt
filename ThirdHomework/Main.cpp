@@ -101,15 +101,15 @@ void sort(vector<Index> & bar) {
 //arr where we store the Indexes
 vector<Index> arr;
 
-void buildIndex()
+void builtIndex()
 {
 	if (!arr.empty())
 	{
 		arr.clear();
 	}
-	
+
 	string line1;
-	
+
 	ifstream reading;
 	reading.open("StudentGrade.db", ios::in);
 	int curr;
@@ -123,29 +123,29 @@ void buildIndex()
 		curr = reading.tellg();
 
 		getline(reading, line1);
-		
+
 		string currFN = line1.substr(0, line1.find(" "));
-		
+
 		Index latest(stoi(currFN), curr);
 		//This if is so we don't have saves that don't exist in the file.
 		if (curr != -1)
 		{
 			arr.push_back(latest);
-			number_of_lines ++;
+			number_of_lines++;
 		}
-		
+
 		reading >> ws;
 		//this reads any whitespace (currently the newline) so the get pointer goes to the begining of the next line.
-		
+
 	}
-	
+
 	reading.close();
 
 	//The next line does a mergesort for the array of Indexes.
 	sort(arr);
-	
+
 	ofstream writing;
-	
+
 	writing.open("FacultyNumber.ids", ios::trunc);
 	writing << number_of_lines << endl;
 	//A loop to write all the data to the file "FacultyNumber.ids".
@@ -154,6 +154,12 @@ void buildIndex()
 		writing << arr[i].FNum << " " << arr[i].offset << endl;
 	}
 	writing.close();
+}
+
+
+void buildIndex()
+{
+	builtIndex();
 
 	cout << "Index is built!" << endl;
 	
@@ -185,94 +191,52 @@ Index BinarySearch(vector<Index> vec,int left, int right, int searched)
 	}
 }
 
+void searching(int value)
+{
+
+	Index res = BinarySearch(arr, 0, arr.size() - 1, value);
+	if (res.offset == -1)
+	{
+		cout << "Record not found!" << endl;
+		
+	}
+	else
+	{
+		ifstream getfrom;
+		getfrom.open("StudentGrade.db");
+		getfrom.seekg(res.offset, ios::beg);
+
+		string line;
+		getline(getfrom, line);
+
+		string str = line;
+		istringstream buf(str);
+		istream_iterator<string> beg(buf), end;
+		vector<string> tokens(beg, end);
+		Student theone(stoi(tokens[0]), tokens[1], tokens[2], stoi(tokens[3]));
+
+		cout << theone;
+
+		getfrom.close();
+
+	}
+}
+
+
 void search()
 {
 	int latestfn;
 	cin >> latestfn;
 	
-	//----------------------------
 	if (!arr.empty())
-	{
-
-		Index res = BinarySearch(arr, 0, arr.size() - 1, latestfn);
-		if (res.offset == -1)
-		{
-			cout << "Record not found!" << endl;
-			//return;
-		}
-		else
-		{
-			ifstream getfrom;
-			getfrom.open("StudentGrade.db");
-			getfrom.seekg(res.offset, ios::beg);
-			
-			string line;
-			getline(getfrom, line);
-			
-			string str = line;
-			istringstream buf(str);
-			istream_iterator<string> beg(buf), end;
-			vector<string> tokens(beg, end);
-			Student theone(stoi(tokens[0]), tokens[1], tokens[2], stoi(tokens[3]));
-
-			cout << theone;
-
-			getfrom.close();
-
-		}
-
+	{		
+		searching(latestfn);
 	}
 	//This case is to build the Index if it doesn't exist.(Current definition of nonexistant index is if the arr is empty.)
 	else
 	{
-
-		string line1;
-		
-		ifstream reading;
-		reading.open("StudentGrade.db", ios::in);
-
-		int curr;
-
-		int number_of_lines = 0;
-
-		//this loop goes through the file StudentGrade and saves Index where for every FN is the offset from the begining of the file
-		while (reading)
-		{
-
-			curr = reading.tellg();
-
-			getline(reading, line1);
-
-			string currFN = line1.substr(0, line1.find(" "));
-
-			Index latest(stoi(currFN), curr);
-			//this if is so we don't have saves that don't exist in the file
-			if (curr != -1)
-			{
-				arr.push_back(latest);
-				number_of_lines++;
-			}
-
-			reading >> ws;
-			//this reads any whitespace (currently the newline )so the get pointer goes to the begining of the next line.
-
-		}
-
-		reading.close();
-
-		//The next line does a mergesort for the array of Indexes
-		sort(arr);
-
-		ofstream writing;
-		
-		writing.open("FacultyNumber.ids", ios::trunc);
-		writing << number_of_lines << endl;
-		//A loop to write all the data to the file "FacultyNumber.ids"
-		for (int i = 0; i < arr.size(); i++)
-		{
-			writing << arr[i].FNum << " " << arr[i].offset << endl;
-		}
-		writing.close();
+		builtIndex();
+		searching(latestfn);
 	}
 	
 }
